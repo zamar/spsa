@@ -1,0 +1,89 @@
+0. LICENSE
+==========
+
+SPSA Tuner is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+SPSA Tuner is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+1. Introduction to SPSA
+========================
+
+Please see the following document (by James C. Spall) as an introduction to SPSA.
+http://www.jhuapl.edu/spsa/PDF-SPSA/Spall_Implementation_of_the_Simultaneous.PDF
+
+Unless otherwise stated, we follow the naming conventions and recommendations of the article. 
+
+2. Modifications for chess engine testing
+=========================================
+
+Please see matlab pseudocode by Spall (document, p. 821) as a starting point.
+
+For chess engine testing the following lines in the pseudocode
+
+yplus  = loss(thetaplus)
+yminus = loss(thetaminus)
+ghat = (yplus - yminus) / (2 * ck * delta)
+
+are replaced with:
+
+ghat = match(thetaplus, thetaminus) / (ck * delta)
+
+match() plays a game between two identical engines.
+If engine 1 (= thetaplus) wins, it returns 1.
+If engine 2 (= thetaminus) wins, it returns -1.
+If game is drawn, it returns 0.
+
+For engine testing it makes sense to define a new varible "relative apply factor" Rk:
+Rk := ak / ck^2.
+
+It's interpretation is following:
+
+theta := theta + ak * ghat
+<=>
+theta := theta + ak * match(thetaplus, thetaminus) / (ck * delta)
+<=>
+theta := theta + Rk * ck * match(thetaplus, thetaminus) / delta
+
+Instead of trying to find ideal values for ak, we can try to find an ideal value for Rk.
+
+3. Configuration file
+=====================
+
+To execute script 'spsa.pl', you need an INI style configuration file.
+Take a look at example files provided. All options should be self-explanatory.
+
+4. Variables CSV-file
+=====================
+
+Variables file (name of the file is defined in configuration file) is a comma separated (CSV) file.
+Columns are defined as follows:
+
+Column 0: Variable name (alphanumeric string)
+Column 1: Variable initial value (float)
+Column 2: Variable maximum value (float)
+Column 3: Variable minimum value (float)
+Column 4: Perturbation "ck" for the last iteration (float)
+Column 5: Relative apply factor "Rk" for the first iteration (float)
+Column 6: For simulation mode, this defines the ELO decrease for point x = (+/-) 100 compared to point x = 0 (optimum) (float).
+
+Notes: 
+- When ck is defined for the last iteration and the number of iterations is known, it's easy to derive a value for c.
+- When ck and Rk are defined for the last iterations, it's easy to derive ak for the last iteration. Based on that we can derive value for a.
+
+5. Getting Started
+==================
+
+- Install Debian/Ubuntu Linux on your computer.
+- Install the following packages: libconfig-tiny-perl libtext-csv-perl libmath-round-perl
+- Modify stockfish to make parameters available via UCI. Copy the modified stockfish in the same directory with the script.
+- Create a config file (just modify 'aggr.conf' slightly) and variable file (just modify 'aggr.var' and add more lines)
+- Kick tuning off the tuning, by executing: spsa.pl [configFile]
