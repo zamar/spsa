@@ -1,4 +1,4 @@
-0. LICENSE
+0. License
 ==========
 
 SPSA Tuner is free software: you can redistribute it and/or modify
@@ -87,3 +87,17 @@ Notes:
 - Modify stockfish to make parameters available via UCI. Copy the modified stockfish in the same directory with the script.
 - Create a config file (just modify 'aggr.conf' slightly) and variable file (just modify 'aggr.var' and add more lines)
 - Kick tuning off the tuning, by executing: spsa.pl [configFile]
+
+6. Practical Guidelines
+=======================
+
+To be able to successfully use SPSA for tuning, one needs to determine good values for coefficients ck and Rk.
+In most cases, it's impossible to determine ideal values. 
+For evaluation related parameters, we've had success with the following values:
+Rk for the last iteration (CSV-file, column 5): 0.002
+ck for the last iteration (CSV-file, column 4): 4 centipawns (= 8 in Stockfish's internal scale)
+
+However if parameter is very unsensitive ELO-wise, one needs to use a larger value for ck.
+Also if one has even some sort of idea about the ELO-sensitivity of the parameter and how far from optimum
+it might at maximum be, one can use the built-in simulator, to find good values for Rk and ck.
+See files 'simul_1var.conf' and 'simul_1var.var' as an example.
