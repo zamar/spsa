@@ -72,7 +72,7 @@ Column 1: Variable initial value (float)
 Column 2: Variable maximum value (float)
 Column 3: Variable minimum value (float)
 Column 4: Perturbation "ck" for the last iteration (float)
-Column 5: Relative apply factor "Rk" for the first iteration (float)
+Column 5: Relative apply factor "Rk" for the last iteration (float)
 Column 6: For simulation mode, this defines the ELO decrease for point x = (+/-) 100 compared to point x = 0 (optimum) (float).
 
 Notes: 
