@@ -86,7 +86,7 @@ Notes:
 - Install the following packages: libconfig-tiny-perl libtext-csv-perl libmath-round-perl
 - Modify stockfish to make parameters available via UCI. Copy the modified stockfish in the same directory with the script.
 - Create a config file (just modify 'aggr.conf' slightly) and variable file (just modify 'aggr.var' and add more lines)
-- Kick tuning off the tuning, by executing: spsa.pl [configFile]
+- Kick off the tuning by executing: spsa.pl [configFile]
 
 6. Practical Guidelines
 =======================
@@ -97,7 +97,7 @@ For evaluation related parameters, we've had success with the following values:
 Rk for the last iteration (CSV-file, column 5): 0.002
 ck for the last iteration (CSV-file, column 4): 4 centipawns (= 8 in Stockfish's internal scale)
 
-However if parameter is very unsensitive ELO-wise, one needs to use a larger value for ck.
+However if parameter is very insensitive ELO-wise, one needs to use a larger value for ck.
 Also if one has even some sort of idea about the ELO-sensitivity of the parameter and how far from optimum
-it might at maximum be, one can use the built-in simulator, to find good values for Rk and ck.
+it might be at maximum, one can use the built-in simulator, to find good values for Rk and ck.
 See files 'simul_1var.conf' and 'simul_1var.var' as an example.
