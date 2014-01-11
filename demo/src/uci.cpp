@@ -109,7 +109,7 @@ void UCI::loop(const string& args) {
           Search::RootColor = pos.side_to_move(); // Ensure it is set
           sync_cout << Eval::trace(pos) << sync_endl;
       }
-      else if (token == "ucinewgame") TT.clear();
+      else if (token == "ucinewgame") { TT.clear(); Position::init_psqt(); }
       else if (token == "go")         go(pos, is);
       else if (token == "position")   position(pos, is);
       else if (token == "setoption")  setoption(is);

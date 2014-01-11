@@ -78,6 +78,7 @@ public:
   Position(const Position& p, Thread* t) { *this = p; thisThread = t; }
   Position(const std::string& f, bool c960, Thread* t) { set(f, c960, t); }
   Position& operator=(const Position&);
+  static void init_psqt();
   static void init();
 
   // Text input/output

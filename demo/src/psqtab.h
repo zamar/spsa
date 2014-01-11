@@ -29,7 +29,7 @@
 /// a given square a (middlegame, endgame) score pair is assigned. PSQT is defined
 /// for the white side and the tables are symmetric for the black side.
 
-static const Score PSQT[][SQUARE_NB] = {
+static Score PSQT[][SQUARE_NB] = {
   { },
   { // Pawn
    S(  0, 0), S( 0, 0), S( 0, 0), S( 0, 0), S(0,  0), S( 0, 0), S( 0, 0), S(  0, 0),

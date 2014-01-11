@@ -21,6 +21,7 @@
 #include <cassert>
 #include <cstring>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 
 #include "bitcount.h"
@@ -31,6 +32,7 @@
 #include "rkiss.h"
 #include "thread.h"
 #include "tt.h"
+#include "ucioption.h"
 
 using std::string;
 
@@ -113,6 +115,72 @@ CheckInfo::CheckInfo(const Position& pos) {
 /// Secondly, the black halves of the tables are initialized by flipping and
 /// changing the sign of the white scores.
 
+void Position::init_psqt() {
+
+  int MgKingRankBonus[8], MgKingFileBonus[8], EgKingRankBonus[8], EgKingFileBonus[8];
+
+  MgKingRankBonus[0] = Options["MgKingRankBonus_0"]; //225;
+  MgKingRankBonus[1] = Options["MgKingRankBonus_1"]; //200;
+  MgKingRankBonus[2] = Options["MgKingRankBonus_2"]; //150;
+  MgKingRankBonus[3] = Options["MgKingRankBonus_3"]; //125;
+  MgKingRankBonus[4] = Options["MgKingRankBonus_4"]; //100;
+  MgKingRankBonus[5] = Options["MgKingRankBonus_5"]; // 75;
+  MgKingRankBonus[6] = Options["MgKingRankBonus_6"]; // 50;
+  MgKingRankBonus[7] = Options["MgKingRankBonus_7"]; // 25;
+
+  MgKingFileBonus[0] = MgKingFileBonus[7] = Options["MgKingFileBonus_0"]; // 75;
+  MgKingFileBonus[1] = MgKingFileBonus[6] = Options["MgKingFileBonus_1"]; //100;
+  MgKingFileBonus[2] = MgKingFileBonus[5] = Options["MgKingFileBonus_2"]; //50;
+  MgKingFileBonus[3] = MgKingFileBonus[4] = Options["MgKingFileBonus_3"]; //0;
+
+  EgKingRankBonus[0] = EgKingRankBonus[7] = Options["EgKingRankBonus_0"]; // 25;
+  EgKingRankBonus[1] = EgKingRankBonus[6] = Options["EgKingRankBonus_1"]; // 75;
+  EgKingRankBonus[2] = EgKingRankBonus[5] = Options["EgKingRankBonus_2"]; //100;
+  EgKingRankBonus[3] = EgKingRankBonus[4] = Options["EgKingRankBonus_3"]; //125;
+
+  EgKingFileBonus[0] = EgKingFileBonus[7] = Options["EgKingFileBonus_0"]; //0;
+  EgKingFileBonus[1] = EgKingFileBonus[6] = Options["EgKingFileBonus_1"]; //50;
+  EgKingFileBonus[2] = EgKingFileBonus[5] = Options["EgKingFileBonus_2"]; //75;
+  EgKingFileBonus[3] = EgKingFileBonus[4] = Options["EgKingFileBonus_3"]; //100;
+
+  // Init King PSQT
+  for (Square s = SQ_A1; s <= SQ_H8; ++s)
+  {
+     Rank r = rank_of(s);
+     File f = file_of(s);
+
+     PSQT[KING][s] = make_score(MgKingRankBonus[r] + MgKingFileBonus[f], EgKingRankBonus[r] + EgKingFileBonus[f]); 
+  }
+
+  // Print King PSQT
+  if (false)
+  {
+      std::cout<<"{\n";
+
+      for (Square s = SQ_A1; s <= SQ_H8; ++s)
+      {
+          std::cout<<"S(" << mg_value(PSQT[KING][s]) << "," << eg_value(PSQT[KING][s]) << ")" << (s != SQ_H8 ? "," : "") << (s % 8 == 7 ? "\n" : "");
+      }
+
+      std::cout<<"}\n";
+  }
+
+  for (PieceType pt = PAWN; pt <= KING; ++pt)
+  {
+      PieceValue[MG][make_piece(BLACK, pt)] = PieceValue[MG][pt];
+      PieceValue[EG][make_piece(BLACK, pt)] = PieceValue[EG][pt];
+
+      Score v = make_score(PieceValue[MG][pt], PieceValue[EG][pt]);
+
+      for (Square s = SQ_A1; s <= SQ_H8; ++s)
+      {
+         psq[WHITE][pt][ s] =  (v + PSQT[pt][s]);
+         psq[BLACK][pt][~s] = -(v + PSQT[pt][s]);
+      }
+  }
+
+}
+
 void Position::init() {
 
   RKISS rk;
@@ -138,19 +206,7 @@ void Position::init() {
   Zobrist::side = rk.rand<Key>();
   Zobrist::exclusion  = rk.rand<Key>();
 
-  for (PieceType pt = PAWN; pt <= KING; ++pt)
-  {
-      PieceValue[MG][make_piece(BLACK, pt)] = PieceValue[MG][pt];
-      PieceValue[EG][make_piece(BLACK, pt)] = PieceValue[EG][pt];
-
-      Score v = make_score(PieceValue[MG][pt], PieceValue[EG][pt]);
-
-      for (Square s = SQ_A1; s <= SQ_H8; ++s)
-      {
-         psq[WHITE][pt][ s] =  (v + PSQT[pt][s]);
-         psq[BLACK][pt][~s] = -(v + PSQT[pt][s]);
-      }
-  }
+  init_psqt();
 }
 
 
