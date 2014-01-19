@@ -97,6 +97,7 @@ sub read_csv
     my ($CSV, $row);
 
     open(INFILE, '<', $csvfile) || die "Could not open file '$csvfile' for reading!";
+    binmode(INFILE);
 
     $CSV = Text::CSV->new();
     while($row = $CSV->getline(\*INFILE))
@@ -308,6 +309,7 @@ sub engine_init
 {
     # STEP. Read opening book.
     open(INPUT, "<$epd_path");
+    binmode(INPUT);
     (@fenlines) = <INPUT>;
     close (INPUT);
     die "epd read failure!" if ($#fenlines == -1);
