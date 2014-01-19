@@ -209,7 +209,11 @@ sub run_spsa
              lock($shared_lock);
 
              # STEP. Increase the shared interation counter
-             return if (++$shared_iter > $iterations);
+             if (++$shared_iter > $iterations)
+             {
+                 engine_quit();
+                 return;
+             }
 
              $iter = $shared_iter;
 
@@ -302,6 +306,7 @@ sub simulate_2games
 
 my @fenlines;
 
+my ($eng1_pid, $eng2_pid);
 local (*Eng1_Reader, *Eng1_Writer);
 local (*Eng2_Reader, *Eng2_Writer);
 
@@ -315,8 +320,8 @@ sub engine_init
     die "epd read failure!" if ($#fenlines == -1);
 
     # STEP. Launch engines.
-    open2(\*Eng1_Reader, \*Eng1_Writer, $eng1_path);
-    open2(\*Eng2_Reader, \*Eng2_Writer, $eng2_path);
+    $eng1_pid = open2(\*Eng1_Reader, \*Eng1_Writer, $eng1_path);
+    $eng2_pid = open2(\*Eng2_Reader, \*Eng2_Writer, $eng2_path);
 
     # STEP. Init engines
     my $line;
@@ -327,6 +332,14 @@ sub engine_init
     $line = ''; while($line ne "uciok") { chomp($line = <Eng1_Reader>); }
     $line = ''; while($line ne "uciok") { chomp($line = <Eng2_Reader>); }
 }
+
+sub engine_quit 
+{ 
+    print Eng1_Writer "quit\n"; 
+    print Eng2_Writer "quit\n"; 
+    waitpid($eng1_pid, 0); 
+    waitpid($eng2_pid, 0); 
+} 
 
 sub engine_2games
 {
