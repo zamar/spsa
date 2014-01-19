@@ -33,6 +33,8 @@ use IO::Handle;
 STDOUT->autoflush(1);
 STDERR->autoflush(1);
 
+my $IS_WINDOWS = ($^O eq 'MSWin32');
+
 ### SECTION. Settings (Static data during execution)
 
 my $ConfigFile = $ARGV[0] || die "You must pass the name of config file as parameter!";
