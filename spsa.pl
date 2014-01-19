@@ -29,6 +29,7 @@ use Text::CSV;
 use Math::Round qw(nearest nearest_floor);
 use List::Util qw(min max);
 use IO::Handle;
+use AutoLoader qw(AUTOLOAD);
 
 STDOUT->autoflush(1);
 STDERR->autoflush(1);
@@ -219,7 +220,7 @@ sub run_spsa
              # STEP. Increase the shared interation counter
              if (++$shared_iter > $iterations)
              {
-                 engine_quit();
+                 engine_quit() if (!$simulate);
                  return;
              }
 
