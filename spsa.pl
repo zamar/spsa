@@ -433,7 +433,7 @@ READ:      while($line = <$Curr_Reader>)
                }
            }
 
-           print GAMELOG "Score: $score\n";
+           print GAMELOG "Score: $score\n" if defined($score);
 
            # STEP. Update thinking times
            my $elapsed = time - $t0;
@@ -454,7 +454,7 @@ READ:      while($line = <$Curr_Reader>)
            }
 
            # STEP. Update draw counter
-           $draw_counter = (abs($score) <= $draw_score_limit ? $draw_counter + 1 : 0);
+           $draw_counter = (defined($score) && abs($score) <= $draw_score_limit ? $draw_counter + 1 : 0);
 
            print GAMELOG "Draw Counter: $draw_counter / $draw_move_limit\n" if ($draw_counter);
 
@@ -468,8 +468,8 @@ READ:      while($line = <$Curr_Reader>)
            my $us   = $engine_to_move;
            my $them = $engine_to_move == 1 ? 2 : 1;
 
-           $win_counter[$us]   = ($score >= +$win_score_limit ? $win_counter[$us]   + 1 : 0);
-           $win_counter[$them] = ($score <= -$win_score_limit ? $win_counter[$them] + 1 : 0);
+           $win_counter[$us]   = (defined($score) && $score >= +$win_score_limit ? $win_counter[$us]   + 1 : 0);
+           $win_counter[$them] = (defined($score) && $score <= -$win_score_limit ? $win_counter[$them] + 1 : 0);
           
            print GAMELOG "Win Counter: $win_counter[$us] / $win_move_limit\n" if ($win_counter[$us]);
            print GAMELOG "Loss Counter: $win_counter[$them] / $win_move_limit\n" if ($win_counter[$them]); 
