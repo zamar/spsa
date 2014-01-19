@@ -82,8 +82,15 @@ Notes:
 5. Getting Started
 ==================
 
-- Install Debian/Ubuntu Linux on your computer.
-- Install the following packages: libconfig-tiny-perl libtext-csv-perl libmath-round-perl
+- Install Perl. 
+    On Windows: Download and install Stawberry Perl (http://strawberryperl.com/).
+    On UNIX/Linux: It's part of the default installation. So you can skip this step.
+
+- Install the following Perl Packages: Config::Tiny, Text::CSV, Math::Round.
+    On Windows: Open Command Prompt. Type: "cpan". Type: "install Config::Tiny". Type: "install Text::CSV". Type: "install Math::Round"
+    On Debian/Ubuntu Linux: Type: sudo apt-get install libconfig-tiny-perl libtext-csv-perl libmath-round-perl
+    On other UNIX/Linux systems: Please consult the documentation of relevant package management software.
+
 - Modify stockfish to make parameters available via UCI. Copy the modified stockfish in the same directory with the script.
 - Create a config file (just modify 'aggr.conf' slightly) and variable file (just modify 'aggr.var' and add more lines)
 - Kick off the tuning by executing: spsa.pl [configFile]
