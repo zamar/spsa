@@ -331,8 +331,8 @@ sub engine_init
     print Eng1_Writer "uci\n";
     print Eng2_Writer "uci\n";
 
-    $line = ''; while($line ne "uciok") { chomp($line = <Eng1_Reader>); }
-    $line = ''; while($line ne "uciok") { chomp($line = <Eng2_Reader>); }
+    while(engine_readline(\*Eng1_Reader) ne "uciok") {} 
+    while(engine_readline(\*Eng2_Reader) ne "uciok") {}
 }
 
 sub engine_quit 
@@ -342,6 +342,15 @@ sub engine_quit
     waitpid($eng1_pid, 0); 
     waitpid($eng2_pid, 0); 
 } 
+
+sub engine_readline
+{
+    my ($Reader) = @_;
+    local $/ = $IS_WINDOWS ? "\r\n" : "\n";
+    my $line = <$Reader>;
+    chomp $line;
+    return $line;
+}
 
 sub engine_2games
 {
@@ -377,8 +386,8 @@ sub engine_2games
         print Eng2_Writer "isready\n";
 
         # STEP. Wait for engines to be ready
-        $line = ''; while($line ne "readyok") { chomp($line = <Eng1_Reader>); }
-        $line = ''; while($line ne "readyok") { chomp($line = <Eng2_Reader>); }
+        while(engine_readline(\*Eng1_Reader) ne "readyok") {}
+        while(engine_readline(\*Eng2_Reader) ne "readyok") {}
 
         # STEP. Init Thinking times
         my $eng1_time = $base_time;
@@ -418,9 +427,8 @@ GAME:  while(1)
            my $flag_mate = 0;
            my $flag_stalemate = 0;
 
-READ:      while($line = <$Curr_Reader>) 
+READ:      while($line = engine_readline($Curr_Reader)) 
            {
-               chomp $line;
                my @array = split(/ /, $line);
 
                # When engine is done, it prints bestmove.
