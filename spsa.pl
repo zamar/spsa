@@ -164,6 +164,12 @@ sub read_csv
     for (my $i = 1; $i <= $threads; $i++)
     {
         $thr[$i] = threads->create(\&run_spsa, $i);
+
+        # HACK: Under Windows the combination of starting new threads and 
+        # calling open2() at the same time seems to be problematic.
+        # So wait for 3 seconds to make sure each new thread has cleanly 
+        # started the engine process before starting a new thread.
+        sleep(3) if $IS_WINDOWS;
     }
 
     # STEP. Join threads
