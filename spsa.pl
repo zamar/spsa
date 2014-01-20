@@ -432,7 +432,7 @@ GAME:  while(1)
            print $Curr_Writer "go wtime $wtime btime $btime winc $inc_time binc $inc_time\n";
 
            # STEP. Read output from engine until it prints the bestmove.
-           my $score;
+           my $score = 0;
            my $flag_mate = 0;
            my $flag_stalemate = 0;
 
@@ -488,7 +488,7 @@ READ:      while($line = engine_readline($Curr_Reader))
            }
 
            # STEP. Update draw counter
-           $draw_counter = (defined($score) && abs($score) <= $draw_score_limit ? $draw_counter + 1 : 0);
+           $draw_counter = (abs($score) <= $draw_score_limit ? $draw_counter + 1 : 0);
 
            print GAMELOG "Draw Counter: $draw_counter / $draw_move_limit\n" if ($draw_counter);
 
@@ -502,8 +502,8 @@ READ:      while($line = engine_readline($Curr_Reader))
            my $us   = $engine_to_move;
            my $them = $engine_to_move == 1 ? 2 : 1;
 
-           $win_counter[$us]   = (defined($score) && $score >= +$win_score_limit ? $win_counter[$us]   + 1 : 0);
-           $win_counter[$them] = (defined($score) && $score <= -$win_score_limit ? $win_counter[$them] + 1 : 0);
+           $win_counter[$us]   = ($score >= +$win_score_limit ? $win_counter[$us]   + 1 : 0);
+           $win_counter[$them] = ($score <= -$win_score_limit ? $win_counter[$them] + 1 : 0);
           
            print GAMELOG "Win Counter: $win_counter[$us] / $win_move_limit\n" if ($win_counter[$us]);
            print GAMELOG "Loss Counter: $win_counter[$them] / $win_move_limit\n" if ($win_counter[$them]); 
