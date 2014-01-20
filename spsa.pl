@@ -324,7 +324,9 @@ sub engine_init
     # STEP. Read opening book.
     open(INPUT, "<$epd_path");
     binmode(INPUT);
-    (@fenlines) = <INPUT>;
+    my @lines;
+    (@lines) = <INPUT>;
+    @fenlines = grep {/\w+/} @lines; # Filter out empty lines
     close (INPUT);
     die "epd read failure!" if ($#fenlines == -1);
 
