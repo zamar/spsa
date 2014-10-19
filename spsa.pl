@@ -67,8 +67,8 @@ $threads = 1 if ($simulate);
 ### SECTION. Variable CSV-file columns. (Static data during execution)
 my $VAR_NAME      = 0; # Name
 my $VAR_START     = 1; # Start Value (theta_0)
-my $VAR_MAX       = 2; # Minimum allowed value
-my $VAR_MIN       = 3; # Maximum allowed value
+my $VAR_MIN       = 2; # Minimum allowed value
+my $VAR_MAX       = 3; # Maximum allowed value
 my $VAR_C_END     = 4; # c in the last iteration
 my $VAR_R_END     = 5; # R in the last iteration. R = a / c ^ 2.
 my $VAR_SIMUL_ELO = 6; # Simulation: Elo loss from 0 (optimum) to +-100)
