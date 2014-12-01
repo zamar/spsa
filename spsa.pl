@@ -450,8 +450,8 @@ READ:      while($line = engine_readline($Curr_Reader))
                }
 
                # Check for mate in one
-               if ($#array >= 7 && $array[0] eq 'info' && $array[1] eq 'depth' &&
-                   $array[5] eq 'score' && $array[6] eq 'mate' && $array[7] eq '1') 
+               if ($#array >= 9 && $array[0] eq 'info' && $array[1] eq 'depth' &&
+                   $array[7] eq 'score' && $array[8] eq 'mate' && $array[9] eq '1') 
                {
                    $flag_mate = 1;
                    $winner = $engine_to_move;
@@ -459,11 +459,11 @@ READ:      while($line = engine_readline($Curr_Reader))
 
                # Record score
                if ($#array >= 7 && $array[0] eq 'info' && $array[1] eq 'depth' &&
-                   $array[5] eq 'score') 
+                   $array[7] eq 'score') 
                {    
-                   $score = $array[7] if ($array[6] eq 'cp');
-                   $score = +100000   if ($array[6] eq 'mate' && $array[7] > 0);
-                   $score = -100000   if ($array[6] eq 'mate' && $array[7] < 0);
+                   $score = $array[9] if ($array[8] eq 'cp');
+                   $score = +100000   if ($array[8] eq 'mate' && $array[9] > 0);
+                   $score = -100000   if ($array[8] eq 'mate' && $array[9] < 0);
                }
            }
 
