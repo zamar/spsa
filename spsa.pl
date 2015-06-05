@@ -128,7 +128,7 @@ sub read_csv
     {
         die "Wrong number of columns!" if (scalar(@$row) != $VAR_END);
 
-        die "Invalid name: '$row->[$VAR_NAME]'"               if ($row->[$VAR_NAME]      !~ /^\w+$/);
+        die "Invalid name: '$row->[$VAR_NAME]'"               if ($row->[$VAR_NAME]      !~ /^[\w\[\]]+$/);
         die "Invalid current: '$row->[$VAR_START]'"           if ($row->[$VAR_START]     !~ /^[-+]?[0-9]*\.?[0-9]+$/);
         die "Invalid max: '$row->[$VAR_MAX]'"                 if ($row->[$VAR_MAX]       !~ /^[-+]?[0-9]*\.?[0-9]+$/);
         die "Invalid min: '$row->[$VAR_MIN]'"                 if ($row->[$VAR_MIN]       !~ /^[-+]?[0-9]*\.?[0-9]+$/);
