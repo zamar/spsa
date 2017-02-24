@@ -108,3 +108,9 @@ However if parameter is very insensitive ELO-wise, one needs to use a larger val
 Also if one has even some sort of idea about the ELO-sensitivity of the parameter and how far from optimum
 it might be at maximum, one can use the built-in simulator, to find good values for Rk and ck.
 See files 'simul_1var.conf' and 'simul_1var.var' as an example.
+
+By using the built-in simulator, we've had success with the following values:
+Rk for the last iteration (CSV-file, column 5): 80 / (number of iterations)
+ck for the last iteration (CSV-file, column 4): 1.1 * (distance from optimum)
+A (aggr.conf file, row 7): max(8000, (number of iterations) / 10)
+
