@@ -47,11 +47,11 @@ Rk := ak / ck^2.
 
 It's interpretation is following:
 
-theta := theta + ak * ghat
+theta := theta - ak * ghat
 <=>
-theta := theta + ak * match(thetaplus, thetaminus) / (ck * delta)
+theta := theta - ak * match(thetaplus, thetaminus) / (ck * delta)
 <=>
-theta := theta + Rk * ck * match(thetaplus, thetaminus) / delta
+theta := theta - Rk * ck * match(thetaplus, thetaminus) / delta
 
 Instead of trying to find ideal values for ak, we can try to find an ideal value for Rk.
 
