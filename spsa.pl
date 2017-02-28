@@ -56,6 +56,7 @@ my $eng2_path        = $Config->{Engine}->{Engine2}        ; defined($eng2_path)
 my $epd_path         = $Config->{Engine}->{EPDBook}        ; defined($epd_path)         || $simulate || die "EPDBook not defined!";
 my $base_time        = $Config->{Engine}->{BaseTime}       ; defined($base_time)        || $simulate || die "BaseTime not defined!";
 my $inc_time         = $Config->{Engine}->{IncTime}        ; defined($inc_time)         || $simulate || die "IncTime not defined!";
+my $max_depth        = $Config->{Engine}->{MaxDepth}       ; defined($max_depth)        || $simulate || die "MaxDepth not defined!";
 my $threads          = $Config->{Engine}->{Concurrency}    ; defined($threads)          || $simulate || die "Concurrency not defined!";
 my $draw_score_limit = $Config->{Engine}->{DrawScoreLimit} ; defined($draw_score_limit) || $simulate || die "DrawScoreLimit not defined!";
 my $draw_move_limit  = $Config->{Engine}->{DrawMoveLimit}  ; defined($draw_move_limit)  || $simulate || die "DrawMoveLimit not defined!";
@@ -429,7 +430,7 @@ GAME:  while(1)
 
            # STEP. Let it go!
            my $t0 = time;
-           print $Curr_Writer "go wtime $wtime btime $btime winc $inc_time binc $inc_time\n";
+           print $Curr_Writer "go wtime $wtime btime $btime winc $inc_time binc $inc_time depth $max_depth\n";
 
            # STEP. Read output from engine until it prints the bestmove.
            my $score = 0;
