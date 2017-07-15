@@ -42,10 +42,10 @@ If engine 1 (= thetaplus) wins, it returns 1.
 If engine 2 (= thetaminus) wins, it returns -1.
 If game is drawn, it returns 0.
 
-For engine testing it makes sense to define a new varible "relative apply factor" Rk:
-Rk := ak / ck^2.
+It is convenient to define "relative apply factor" Rk to generate ak:
+ak := Rk * ck^2.
 
-It's interpretation is following:
+Its interpretation is:
 
 theta := theta + ak * ghat
 <=>
@@ -53,7 +53,7 @@ theta := theta + ak * match(thetaplus, thetaminus) / (ck * delta)
 <=>
 theta := theta + Rk * ck * match(thetaplus, thetaminus) / delta
 
-Instead of trying to find ideal values for ak, we can try to find an ideal value for Rk.
+with delta being chosen as Bernoulli (+/- 1).
 
 3. Configuration file
 =====================
@@ -73,11 +73,13 @@ Column 2: Variable minimum value (float)
 Column 3: Variable maximum value (float)
 Column 4: Perturbation "ck" for the last iteration (float)
 Column 5: Relative apply factor "Rk" for the last iteration (float)
-Column 6: For simulation mode, this defines the ELO decrease for point x = (+/-) 100 compared to point x = 0 (optimum) (float).
+Column 6: For simulation mode, this defines the Elo decrease for point x = (+/-) 100 compared to point x = 0 (optimum) (float).
 
 Notes: 
-- When ck is defined for the last iteration and the number of iterations is known, it's easy to derive a value for c.
-- When ck and Rk are defined for the last iterations, it's easy to derive ak for the last iteration. Based on that we can derive value for a.
+- When ck is defined for the last iteration and the number of iterations is known,
+  it's easy to derive a value for c.
+- When ck and Rk are defined for the last iterations, it's easy to derive ak for the last iteration.
+  Based on that we can derive value for a.
 
 5. Getting Started
 ==================
@@ -92,11 +94,29 @@ Notes:
     On other UNIX/Linux systems: Please consult the documentation of relevant package management software.
 
 - Modify stockfish to make parameters available via UCI. Copy the modified stockfish in the same directory with the script.
-- Create a config file (just modify 'aggr.conf' slightly) and variable file (just modify 'aggr.var' and add more lines)
+- Create a config file (modify 'contempt.conf' slightly) and variable file (modify 'contempt.var' and add more lines)
 - Kick off the tuning by executing: spsa.pl [configFile]
 
 6. Practical Guidelines
 =======================
+
+To tune SPSA, see the Semiautomatic Tuning method by Spall introduced in his book
+[Introduction to Stochastic Search and Optimization (ISSO)](http://jhuapl.edu/ISSO/).
+There are 3 main knobs, the two gain sequences (_a_ and _c_), and the perturbation distribution, delta.
+Delta is best chosen as Bernoulli (+/- 1), as that is asymptotically optimal (it must not be Normal or Uniform, see ISSO).
+There are rules about the properties of the gain sequences. The standard form works well, and follows the forms:
+
+```
+a(k) = a / (k + 1 + A) ^ alpha
+c(k) = c / (k + 1) ^ gamma
+```
+
+Here, the values alpha and gamma are tied together, asymptotically optimal are _alpha_ = 1 and _gamma_ = 1/6,
+but the values _alpha_ = .602 and _gamma_ = .101 work well for finite cases.
+_A_ should be about 10% of the total iterations, and _c_ should be approximately the standard error
+of the loss function in question.
+_a_ is the most volatile parameter, and must be tuned carefully. In general, one should pick _a_
+(by picking _R_) such that the first step is not too large so as to send the algorithm in the wrong direction.
 
 To be able to successfully use SPSA for tuning, one needs to determine good values for coefficients ck and Rk.
 In most cases, it's impossible to determine ideal values. 
@@ -104,7 +124,8 @@ For evaluation related parameters, we've had success with the following values:
 Rk for the last iteration (CSV-file, column 5): 0.002
 ck for the last iteration (CSV-file, column 4): 4 centipawns (= 8 in Stockfish's internal scale)
 
-However if parameter is very insensitive ELO-wise, one needs to use a larger value for ck.
-Also if one has even some sort of idea about the ELO-sensitivity of the parameter and how far from optimum
-it might be at maximum, one can use the built-in simulator, to find good values for Rk and ck.
+However if parameter is very insensitive Elo-wise, one needs to use a larger value for ck.
+Also if one has even some sort of idea about the Elo-sensitivity of the parameter and how far
+from optimum it might be at maximum, one can use the built-in simulator, to discover good values
+for Rk and ck.
 See files 'simul_1var.conf' and 'simul_1var.var' as an example.

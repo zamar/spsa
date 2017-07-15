@@ -134,7 +134,7 @@ sub read_csv
         die "Invalid min: '$row->[$VAR_MIN]'"                 if ($row->[$VAR_MIN]       !~ /^[-+]?[0-9]*\.?[0-9]+$/);
         die "Invalid c end: '$row->[$VAR_C_END]'"             if ($row->[$VAR_C_END]     !~ /^[-+]?[0-9]*\.?[0-9]+$/);
         die "Invalid r end: '$row->[$VAR_R_END]'"             if ($row->[$VAR_R_END]     !~ /^[-+]?[0-9]*\.?[0-9]+$/);
-        die "Invalid simul ELO: '$row->[$VAR_SIMUL_ELO]'"     if ($row->[$VAR_SIMUL_ELO] !~ /^[-+]?[0-9]*\.?[0-9]+$/);
+        die "Invalid simulation Elo: '$row->[$VAR_SIMUL_ELO]'"if ($row->[$VAR_SIMUL_ELO] !~ /^[-+]?[0-9]*\.?[0-9]+$/);
     }
 
     # STEP. Calculate SPSA parameters for each variable.
@@ -242,7 +242,9 @@ sub run_spsa
                  $var_eng1{$name} = min(max($var_value{$name} + $var_c{$name} * $var_delta{$name}, $var_min{$name}), $var_max{$name});
                  $var_eng2{$name} = min(max($var_value{$name} - $var_c{$name} * $var_delta{$name}, $var_min{$name}), $var_max{$name});
 
-                 print "Iteration: $iter, variable: $name, value: $var_value{$name}, a: $var_a{$name}, c: $var_c{$name}, R: $var_R{$name}\n";
+                 my $lower = min($var_eng1{$name}, $var_eng2{$name});
+                 my $upper = max($var_eng1{$name}, $var_eng2{$name});
+                 printf "Iteration: %d, Parameter: %s, theta: %f, x: [%f, %f], a: %f, R: %f\n", $iter, $name, $shared_theta{$name}, $lower, $upper, $var_a{$name}, $var_R{$name};
              }
         }
 
@@ -275,26 +277,26 @@ sub run_spsa
 
 ### SECTION. Simulating a game
 
-sub simulate_ELO
+sub simulate_Elo
 {
     my ($var) = @_;
-    my $ELO = 0.0;
+    my $Elo = 0.0;
 
     foreach my $key (keys(%$var))
     {
         my $a = -0.0001 * $variableIdx{$key}[$VAR_SIMUL_ELO];
-        $ELO += $a * $var->{$key} ** 2;
+        $Elo += $a * $var->{$key} ** 2;
     }
    
-    return $ELO; 
+    return $Elo; 
 }
 
 sub simulate_winPerc
 {
-    my ($ELO_A, $ELO_B) = @_;
+    my ($Elo_A, $Elo_B) = @_;
 
-    my $Q_A = 10 ** ($ELO_A / 400);
-    my $Q_B = 10 ** ($ELO_B / 400);
+    my $Q_A = 10 ** ($Elo_A / 400);
+    my $Q_B = 10 ** ($Elo_B / 400);
 
     return $Q_A / ($Q_A + $Q_B);
 }
@@ -303,10 +305,10 @@ sub simulate_2games
 {
     my ($var_eng1, $var_eng2) = @_;
 
-    my $eng1_elo = simulate_ELO($var_eng1);
-    my $eng2_elo = simulate_ELO($var_eng2);
+    my $eng1_Elo = simulate_Elo($var_eng1);
+    my $eng2_Elo = simulate_Elo($var_eng2);
 
-    my $eng1_winperc = simulate_winPerc($eng1_elo, $eng2_elo);
+    my $eng1_winperc = simulate_winPerc($eng1_Elo, $eng2_Elo);
 
     return (rand() < $eng1_winperc ? 1 : -1) + (rand() < $eng1_winperc ? 1 : -1);
 }
@@ -530,5 +532,6 @@ READ:      while($line = engine_readline($Curr_Reader))
        $result += ($winner == 1 ? 1 : $winner == 2 ? -1 : 0);
    }
 
-   return $result;
+   # Calculate Elo loss among (-400, -191, 0, 191, 400) normalized to [-2.0, 2.0]
+   return (-2.0, -0.955, 0, 0.955, 2.0)[$result + 2];
 }
